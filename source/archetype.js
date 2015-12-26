@@ -121,6 +121,12 @@
 	
 	var lib = {
 
+		/**
+		 * Get a native method at a specific path. If the method found at the top level is not
+		 * native, a native version is taken from the safe window.
+		 * @param {String} path The method path (eg. window.setTimeout)
+		 * @returns {Function}
+		 */
 		getNativeMethod: function(path) {
 			var obj = getMethodAtPath(path);
 			if (!obj) {
@@ -138,12 +144,22 @@
 			return bindMethod(obj.method, obj.context);
 		},
 
+		/**
+		 * Check if a path or method is native. If the item provided is a string, the top window
+		 * is checked - if the item provided is a function, it alone is checked.
+		 * @param {String|Function} pathOrMethod The path (string) or function to check
+		 * @returns {Boolean}
+		 */
 		isNative: function(pathOrMethod) {
 			return typeof pathOrMethod === "string" ?
 				pathIsNative(pathOrMethod) :
 				isNative(pathOrMethod);
 		},
 
+		/**
+		 * Patch a window method with a specific path
+		 * @param {String} path The method path (eg. window.document.querySelector)
+		 */
 		patchMethod: function(path) {
 			setMethodAtPath(path, lib.getNativeMethod(path));
 		}
