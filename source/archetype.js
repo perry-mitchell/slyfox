@@ -37,6 +37,17 @@
 		),
 		reBound = /__archetype_bound_method__/;
 
+	var _entryPoints = {
+		top: {
+			window: window,
+			document: window.document
+		},
+		safe: {
+			window: _safeWindow,
+			document: _safeWindow.document
+		}
+	};
+
 	//
 	// Toolkit
 	//
@@ -47,16 +58,16 @@
 		};
 	}
 
-	function getMethodAtPath(path, windowObj, bindTarget) {
-		windowObj = windowObj || window;
+	function getMethodAtPath(path, entryPoints, bindTarget) {
+		entryPoints = entryPoints || _entryPoints.top;
 		var currentObj,
 			previousItem,
 			pathParts = path.split("."),
-			windowName = pathParts.shift();
-		if (windowName !== "window") {
-			throw new Error("Invalid path");
+			entryPoint = pathParts.shift();
+		if (entryPoints.hasOwnProperty(entryPoint) !== true) {
+			throw new Error("Invalid path: " + path);
 		}
-		pathParts.unshift(windowObj);
+		pathParts.unshift(entryPoints[entryPoint]);
 		var outMethod = pathParts.reduce(function(previous, current) {
 			if (previous && previous[current]) {
 				previousItem = previous;
@@ -89,8 +100,8 @@
 			(value && type == 'object' && reHostCtor.test(toString.call(value))) || false;
 	}
 
-	function pathIsNative(path, windowObj) {
-		var currentObj = getMethodAtPath(path, windowObj);
+	function pathIsNative(path, entryPoints) {
+		var currentObj = getMethodAtPath(path, entryPoints);
 		return currentObj ? isNative(currentObj.method) : false;
 	}
 
@@ -133,7 +144,7 @@
 				throw new Error("Unknown method (top window): " + path);
 			} else if (obj && !lib.isNative(obj.method)) {
 				// call again, providing the new window (safe) and the top-window context to bind
-				obj = getMethodAtPath(path, _safeWindow, obj.context);
+				obj = getMethodAtPath(path, _entryPoints.safe, obj.context);
 				// try again
 				if (!obj) {
 					throw new Error("Unknown method (safe window): " + path);

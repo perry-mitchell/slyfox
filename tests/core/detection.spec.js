@@ -17,6 +17,10 @@ describe("detection", function() {
 			expect(archetype.isNative("window.notSet")).toBe(false);
 		});
 
+		it("can use shorthand paths", function() {
+			expect(archetype.isNative("document.querySelectorAll")).toBe(true);
+		});
+
 	});
 
 	describe("with methods", function() {
