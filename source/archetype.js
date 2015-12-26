@@ -107,14 +107,16 @@
 
 	function setMethodAtPath(path, method) {
 		var pathParts = path.split("."),
-			windowName = pathParts.shift(),
-			currentObj = window,
+			entryPoint = pathParts.shift(),
+			currentObj,
 			nextPart;
-		if (windowName !== "window") {
+		if (_entryPoints.top.hasOwnProperty(entryPoint) !== true) {
+			console.log("ENT", entryPoint);
 			throw new Error("Invalid path: " + path);
 		} else if (pathParts.length < 1) {
 			throw new Error("Invalid path - not specific enough: " + path);
 		}
+		currentObj = _entryPoints.top[entryPoint];
 		while (pathParts.length > 1) {
 			nextPart = pathParts.shift();
 			if (currentObj[nextPart]) {
