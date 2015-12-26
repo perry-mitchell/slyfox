@@ -78,7 +78,19 @@
 		return currentObj ? isNative(currentObj) : false;
 	}
 	
-	return {
+	var lib = {
+
+		getNativeMethod: function(path) {
+			var method = getMethodAtPath(path);
+			if (!method || !lib.isNative(method)) {
+				method = getMethodAtPath(path, _safeWindow);
+				// try again
+				if (!method || !lib.isNative(method)) {
+					throw new Error("Failed finding a native method for: " + path);
+				}
+			}
+			return method;
+		},
 
 		isNative: function(pathOrMethod) {
 			return typeof pathOrMethod === "string" ?
@@ -87,5 +99,7 @@
 		}
 
 	};
+
+	return lib;
 
 }));
