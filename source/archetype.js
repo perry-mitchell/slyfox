@@ -77,6 +77,31 @@
 		var currentObj = getMethodAtPath(path, windowObj);
 		return currentObj ? isNative(currentObj) : false;
 	}
+
+	function setMethodAtPath(path, method) {
+		var pathParts = path.split("."),
+			windowName = pathParts.shift(),
+			currentObj = window,
+			nextPart;
+		if (windowName !== "window") {
+			throw new Error("Invalid path: " + path);
+		} else if (pathParts.length < 1) {
+			throw new Error("Invalid path - not specific enough: " + path);
+		}
+		while (pathParts.length > 1) {
+			nextPart = pathParts.shift();
+			if (currentObj[nextPart]) {
+				currentObj = currentObj[nextPart];
+			} else {
+				throw new Error("Unknown method: " + path);
+			}
+		}
+		currentObj[pathParts.shift()] = method;
+	}
+
+	//
+	// Library
+	//
 	
 	var lib = {
 
@@ -96,6 +121,10 @@
 			return typeof pathOrMethod === "string" ?
 				pathIsNative(pathOrMethod) :
 				isNative(pathOrMethod);
+		},
+
+		patchMethod: function(path) {
+			setMethodAtPath(path, lib.getNativeMethod(path));
 		}
 
 	};
