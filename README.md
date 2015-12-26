@@ -1,9 +1,9 @@
-# Archetype
+# archetype
 Restore overwritten methods on the window.
 
-[![Build Status](https://travis-ci.org/perry-mitchell/archetype.svg)](https://travis-ci.org/perry-mitchell/archetype)
+[![Build Status](https://travis-ci.org/perry-mitchell/archetype.svg)](https://travis-ci.org/perry-mitchell/archetype) [![archetype is on Bower](https://badge.fury.io/bo/archetype.svg)](https://github.com/perry-mitchell/archetype)
 
-## Picking up the pieces
+## Making repairs
 Libraries like Prototype.js do immeasureable harm to the shared environments that are webpages. 3rd party libraries - like those used in tracking and advertising scripts - must ensure that they can cope with whatever broken system is presented to them. Libraries like Prototype assume that what they add is for the benefit of the developer and that single website, and that the extensions they provide won't harm existing functionality - but that's obviously incorrect, and Archetype is here to fix those problems in a simple manner.
 
 ### What it does
