@@ -40,6 +40,23 @@
 	// Toolkit
 	//
 
+	function getMethodAtPath(path, windowObj) {
+		windowObj = windowObj || window;
+		var currentObj,
+			pathParts = path.split("."),
+			windowName = pathParts.shift();
+		if (windowName !== "window") {
+			throw new Error("Invalid path");
+		}
+		pathParts.unshift(windowObj);
+		return pathParts.reduce(function(previous, current) {
+			if (previous && previous[current]) {
+				return previous[current];
+			}
+			return undefined;
+		});
+	}
+
 	/**
 	 * Check if a method is native
 	 * Taken from: https://davidwalsh.name/detect-native-function
@@ -57,20 +74,7 @@
 	}
 
 	function pathIsNative(path, windowObj) {
-		windowObj = windowObj || window;
-		var currentObj,
-			pathParts = path.split("."),
-			windowName = pathParts.shift();
-		if (windowName !== "window") {
-			throw new Error("Invalid path");
-		}
-		pathParts.unshift(windowObj);
-		currentObj = pathParts.reduce(function(previous, current) {
-			if (previous && previous[current]) {
-				return previous[current];
-			}
-			return undefined;
-		});
+		var currentObj = getMethodAtPath(path, windowObj);
 		return currentObj ? isNative(currentObj) : false;
 	}
 	
