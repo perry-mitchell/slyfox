@@ -1,12 +1,10 @@
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		define("archetype", factory);
-	} else if (typeof exports === 'object') {
-		module.exports = factory();
 	} else {
 		root.archetype = factory();
 	}
-}(this || window, function () {
+}(window, function () {
 
 	"use strict";
 
@@ -27,15 +25,15 @@
 	var fnToString = _safeWindow.Function.prototype.toString,
 		toString = _safeWindow.Object.prototype.toString,
 		reHostCtor = /^\[object .+?Constructor\]$/,
-		reNative = RegExp('^' +
+		reNative = new RegExp('^' +
 			// Coerce `Object#toString` to a string
 			String(toString)
-			// Escape any special regexp characters
-			.replace(/[.*+?^${}()|[\]\/\\]/g, '\\$&')
-			// Replace mentions of `toString` with `.*?` to keep the template generic.
-			// Replace thing like `for ...` to support environments like Rhino which add extra info
-			// such as method arity.
-			.replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+				// Escape any special regexp characters
+				.replace(/[.*+?^${}()|[\]\/\\]/g, '\\$&')
+				// Replace mentions of `toString` with `.*?` to keep the template generic.
+				// Replace thing like `for ...` to support environments like Rhino which add extra info
+				// such as method arity.
+				.replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
 		);
 
 	//
@@ -48,17 +46,17 @@
 	 */
 	function isNative(value) {
 		var type = typeof value;
-		return type == 'function'
+		return type === "function" ?
 			// Use `Function#toString` to bypass the value's own `toString` method
 			// and avoid being faked out.
-			? reNative.test(fnToString.call(value))
+			reNative.test(fnToString.call(value)) :
 			// Fallback to a host object check because some environments will represent
 			// things like typed arrays as DOM methods which may not conform to the
 			// normal native pattern.
-			: (value && type == 'object' && reHostCtor.test(toString.call(value))) || false;
+			(value && type == 'object' && reHostCtor.test(toString.call(value))) || false;
 	}
 
-	function methodIsPure(path, windowObj) {
+	function pathIsNative(path, windowObj) {
 		windowObj = windowObj || window;
 		var currentObj,
 			pathParts = path.split("."),
@@ -77,6 +75,12 @@
 	}
 	
 	return {
+
+		isNative: function(pathOrMethod) {
+			return typeof pathOrMethod === "string" ?
+				pathIsNative(pathOrMethod) :
+				isNative(pathOrMethod);
+		}
 
 	};
 
