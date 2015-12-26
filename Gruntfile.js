@@ -8,7 +8,7 @@ module.exports = function(grunt) {
             core: {
                 src: "source/archetype.js",
                 options: {
-                    specs: "tests/core/**/*.js"
+                    specs: ["tests/core/**/*.js"]
                 }
             }
         },

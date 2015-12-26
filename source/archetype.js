@@ -34,27 +34,42 @@
 				// Replace thing like `for ...` to support environments like Rhino which add extra info
 				// such as method arity.
 				.replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-		);
+		),
+		reBound = /__archetype_bound_method__/;
 
 	//
 	// Toolkit
 	//
 
-	function getMethodAtPath(path, windowObj) {
+	function bindMethod(method, context) {
+		return function __archetype_bound_method__() {
+			return method.apply(context, arguments);
+		};
+	}
+
+	function getMethodAtPath(path, windowObj, bindTarget) {
 		windowObj = windowObj || window;
 		var currentObj,
+			previousItem,
 			pathParts = path.split("."),
 			windowName = pathParts.shift();
 		if (windowName !== "window") {
 			throw new Error("Invalid path");
 		}
 		pathParts.unshift(windowObj);
-		return pathParts.reduce(function(previous, current) {
+		var outMethod = pathParts.reduce(function(previous, current) {
 			if (previous && previous[current]) {
+				previousItem = previous;
 				return previous[current];
 			}
 			return undefined;
 		});
+		bindTarget = bindTarget || previousItem;
+		return outMethod && bindTarget ?
+			{
+				method: outMethod,
+				context: bindTarget
+			} : undefined;
 	}
 
 	/**
@@ -62,11 +77,12 @@
 	 * Taken from: https://davidwalsh.name/detect-native-function
 	 */
 	function isNative(value) {
-		var type = typeof value;
-		return type === "function" ?
+		var type = typeof value,
+			fnStr = type === "function" ? fnToString.call(value) : null;
+		return fnStr ?
 			// Use `Function#toString` to bypass the value's own `toString` method
 			// and avoid being faked out.
-			reNative.test(fnToString.call(value)) :
+			reBound.test(fnStr) || reNative.test(fnStr) :
 			// Fallback to a host object check because some environments will represent
 			// things like typed arrays as DOM methods which may not conform to the
 			// normal native pattern.
@@ -75,7 +91,7 @@
 
 	function pathIsNative(path, windowObj) {
 		var currentObj = getMethodAtPath(path, windowObj);
-		return currentObj ? isNative(currentObj) : false;
+		return currentObj ? isNative(currentObj.method) : false;
 	}
 
 	function setMethodAtPath(path, method) {
@@ -106,15 +122,20 @@
 	var lib = {
 
 		getNativeMethod: function(path) {
-			var method = getMethodAtPath(path);
-			if (!method || !lib.isNative(method)) {
-				method = getMethodAtPath(path, _safeWindow);
+			var obj = getMethodAtPath(path);
+			if (!obj) {
+				throw new Error("Unknown method (top window): " + path);
+			} else if (obj && !lib.isNative(obj.method)) {
+				// call again, providing the new window (safe) and the top-window context to bind
+				obj = getMethodAtPath(path, _safeWindow, obj.context);
 				// try again
-				if (!method || !lib.isNative(method)) {
+				if (!obj) {
+					throw new Error("Unknown method (safe window): " + path);
+				} else if (obj && !lib.isNative(obj.method)) {
 					throw new Error("Failed finding a native method for: " + path);
 				}
 			}
-			return method;
+			return bindMethod(obj.method, obj.context);
 		},
 
 		isNative: function(pathOrMethod) {
