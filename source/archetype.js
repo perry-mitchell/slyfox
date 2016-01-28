@@ -111,7 +111,6 @@
 			currentObj,
 			nextPart;
 		if (_entryPoints.top.hasOwnProperty(entryPoint) !== true) {
-			console.log("ENT", entryPoint);
 			throw new Error("Invalid path: " + path);
 		} else if (pathParts.length < 1) {
 			throw new Error("Invalid path - not specific enough: " + path);
