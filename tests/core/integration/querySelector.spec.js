@@ -35,8 +35,19 @@ describe("integration: querySelector & querySelectorAll", function() {
 				elSub = qs(".testDiv");
 			expect(elSub instanceof HTMLDivElement).toBe(true);
 			expect(elTop).toBe(null);
-		})
+		});
 
+		it("is equal to querySelector on HTML elements", function() {
+			var childElement = document.createElement("div");
+			childElement.setAttribute("class", "childDiv");
+			targetElement.appendChild(childElement);
+			targetElement.querySelector = function() { return null; };
+			var qs = archetype.getNativeMethod("window.document.body.querySelector", targetElement),
+				elTop = targetElement.querySelector(".childDiv"),
+				elSub = qs(".childDiv");
+
+			expect(elSub instanceof HTMLDivElement).toBe(true);
+			expect(elTop).toBe(null);
+		});
 	});
-
 });

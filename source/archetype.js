@@ -130,17 +130,19 @@
 	//
 	// Library
 	//
-	
+
 	var lib = {
 
 		/**
 		 * Get a native method at a specific path. If the method found at the top level is not
 		 * native, a native version is taken from the safe window.
 		 * @param {String} path The method path (eg. window.setTimeout)
+		 * @param {HTMLElement} bindContext Element where to bind the native method
 		 * @returns {Function}
 		 */
-		getNativeMethod: function(path) {
+		getNativeMethod: function(path, bindContext) {
 			var obj = getMethodAtPath(path);
+			bindContext = bindContext || obj.context;
 			if (!obj) {
 				throw new Error("Unknown method (top window): " + path);
 			} else if (obj && !lib.isNative(obj.method)) {
@@ -153,7 +155,7 @@
 					throw new Error("Failed finding a native method for: " + path);
 				}
 			}
-			return bindMethod(obj.method, obj.context);
+			return bindMethod(obj.method, bindContext);
 		},
 
 		/**

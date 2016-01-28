@@ -14,10 +14,11 @@ The library uses an iframe to create a clean environment in which to extract met
 
 ## API
 
-### getNativeMethod(path)
-Fetches a native window method at a given path. A path is simply the string representation of a method's location on the window: eg. window.setInterval.
+### getNativeMethod(path{,  bindContext})
+Fetches a native window method at a given path. A path is simply the string representation of a method's location on the window: eg. window.setInterval. A bindContext is the HTML where you would like to bind the method.
 
 If a method like `window.document.querySelector` is overwritten by some crappy JavaScript, you can retrieve it by calling `var querySelector = archetype.getNativeMethod("window.document.querySelector");`.
+In the same way, if you would like to make sure an HTML element has the native function you can call `var qsEl =  archetype.getNativeMethod("window.document.querySelector", divElement);`
 
 ### isNative(pathOrMethod)
 Checks if a method is native (not overwritten). You can pass a path (eg. "window.setTimeout") or an actual function.
