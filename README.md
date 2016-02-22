@@ -13,6 +13,15 @@ Archetype provides access to original window methods that may have been overwrit
 The library uses an iframe to create a clean environment in which to extract methods from. When a function is requested from archetype, the main window is checked for a native function - if that function is not native, a native version will be taken from within an iframe, bound to the top-level and returned.
 
 ## API
+**NB:** archetype is loaded asynchronously, due to the fact that it requires `document.body.appendChild` to be defined for inserting its safe-iframe. Before using archetype, wrap your code in the following:
+
+```
+archetype.onReady(function() {
+
+    var getElementById = archetype.getNativeMethod("document.getElementById");
+
+});
+```
 
 ### getNativeMethod(path{,  bindContext})
 Fetches a native window method at a given path. A path is simply the string representation of a method's location on the window: eg. window.setInterval. `bindContext` is an optional object to bind at the context - if not provided, the window/document will be used instead.
