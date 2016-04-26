@@ -14,11 +14,15 @@
     // Pre-flight
     //
 
+    function isAppendReady() {
+        return (document.body && document.body.appendChild);
+    }
+
     function isDOMReady() {
         if (document.readyState && ["loading", "interactive", "complete"].indexOf(document.readyState) >= 0) {
-            return (["interactive", "complete"].indexOf(document.readyState) >= 0);
+            return (["interactive", "complete"].indexOf(document.readyState) >= 0) && isAppendReady();
         }
-        return (document.body && document.body.appendChild);
+        return isAppendReady();
     }
 
     function onDOMReady(callback) {
@@ -27,6 +31,7 @@
         } else {
             var evtListener = function(event) {
                 (callback)();
+                // setTimeout(callback, 0);
                 document.removeEventListener("DOMContentLoaded", evtListener, false);
             };
             document.addEventListener("DOMContentLoaded", evtListener, false);
