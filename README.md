@@ -15,7 +15,7 @@ The library uses an iframe to create a clean environment in which to extract met
 ## API
 **NB:** archetype is loaded asynchronously, due to the fact that it requires `document.body.appendChild` to be defined for inserting its safe-iframe. Before using archetype, wrap your code in the following:
 
-```
+```javascript
 archetype.onReady(function() {
 
     var getElementById = archetype.getNativeMethod("document.getElementById");
@@ -41,13 +41,13 @@ Patches a method on the top window. This function checks to see if the method on
 ### Fixing overwritten query selectors
 Some libraries like Prototype.js and CloudFlare's RocketLoader overwrite methods like `querySelector` and `querySelectorAll`, which is a very stupid idea. Fixing this is simple:
 
-```
+```javascript
 ["document.querySelector", "document.querySelectorAll"].forEach(archetype.patchMethod);
 ```
 
 This approach is somewhat fighting fire with fire, so the better option would be to simply keep a reference to a valid selector method:
 
-```
+```javascript
 var querySelector = archetype.getNativeMethod("document.querySelector"),
     querySelectorAll = archetype.getNativeMethod("document.querySelectorAll");
 ```
