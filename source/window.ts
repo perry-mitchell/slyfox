@@ -1,8 +1,4 @@
-let __safeWindow: Window | null = null,
-    __safeWindowPromise: Promise<Window> | null = null;
-
-async function createSafeWindow(): Promise<Window> {
-    if (__safeWindow) return __safeWindow;
+export async function createSafeWindow(): Promise<Window> {
     const frame = document.createElement("iframe");
     frame.setAttribute("style", "display: none; visibility: hidden;");
     return new Promise<Window>((resolve, reject) => {
@@ -17,11 +13,4 @@ async function createSafeWindow(): Promise<Window> {
         });
         document.body.appendChild(frame);
     });
-}
-
-export async function getSafeWindow(): Promise<Window> {
-    if (!__safeWindowPromise) {
-        __safeWindowPromise = createSafeWindow();
-    }
-    return __safeWindowPromise;
 }
