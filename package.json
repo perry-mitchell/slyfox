@@ -9,6 +9,7 @@
     "build": "npm run clean && npm run build:source",
     "build:source": "tsc",
     "clean": "rimraf dist",
+    "prepublishOnly": "npm run build",
     "test": "grunt test"
   },
   "repository": {
