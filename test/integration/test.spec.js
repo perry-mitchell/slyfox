@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import fs from "node:fs/promises";
 import path from "node:path";
 import URL from "node:url";
 import puppeteer from "puppeteer";
@@ -81,6 +80,18 @@ describe("SlyFox", function() {
                 const sesh = await window.SlyFox.createSession();
                 const dce = sesh.getNativeMethod("document.createElement");
                 dce("div");
+                return window.stolenCalls;
+            });
+            expect(stolenCalls).to.equal(0, "There should be no calls to attacker's overrides");
+        });
+
+        it("provides original function on document.body", async function() {
+            const stolenCalls = await this.page.evaluate(async function() {
+                const sesh = await window.SlyFox.createSession();
+                const dce = sesh.getNativeMethod("document.createElement");
+                const dbac = sesh.getNativeMethod("document.body.appendChild");
+                const span = dce("span");
+                dbac(span);
                 return window.stolenCalls;
             });
             expect(stolenCalls).to.equal(0, "There should be no calls to attacker's overrides");
