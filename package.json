@@ -11,7 +11,8 @@
     "build:test": "rollup -c",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
-    "test": "grunt test"
+    "test": "npm run clean && npm run build:test && npm run test:integration",
+    "test:integration": "mocha \"test/integration/**/*.spec.js\""
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,9 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.10.1",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "puppeteer": "^21.5.2",
     "rimraf": "^5.0.5",
     "rollup": "^4.6.1",
     "tslib": "^2.6.2",

@@ -36,20 +36,22 @@ export function getNativeMethod<T extends () => void>(
     safeWindow: Window
 ): T {
     let obj = getMethodAtPath(methodPath, entryPoints.top);
-    const bindTarget = obj?.context ?? null;
     if (!obj) {
         throw new Error("Unknown method (top window): " + methodPath);
     } else if (obj && !isNative(obj.method, entryPoints.top, safeWindow)) {
+        console.log("NON NATIVE (top)", methodPath);
         // call again, providing the new window (safe) and the top-window context to bind
         obj = getMethodAtPath(methodPath, entryPoints.safe, obj.context);
+        console.log("IS NATIVE NOW?", methodPath, isNative(obj.method, entryPoints.safe, safeWindow));
         // try again
         if (!obj) {
             throw new Error("Unknown method (safe window): " + methodPath);
-        } else if (obj && !isNative(obj.method, entryPoints.safe, safeWindow)) {
+        } else if (!isNative(obj.method, entryPoints.safe, safeWindow)) {
             throw new Error("Failed finding a native method for: " + methodPath);
         }
     }
-    return bindMethod<T>(obj.method as T, bindTarget);
+    console.log("BINDING", obj.method.toString());
+    return bindMethod<T>(obj.method as T, obj.context);
 }
 
 function getNativeToStringRexp(safeWindow: Window): RegExp {
