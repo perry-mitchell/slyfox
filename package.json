@@ -1,24 +1,23 @@
 {
-  "name": "restore-func",
+  "name": "slyfox",
   "version": "0.2.1",
-  "description": "Restore overwritten methods on the window and document",
-  "main": "dist/index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "description": "Restore overwritten methods on the window and document... Like a fox.",
+  "exports": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "test": "grunt test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/perry-mitchell/restore-func.git"
+    "url": "git+https://github.com/perry-mitchell/slyfox.git"
   },
   "author": "Perry Mitchell <perry@perrymitchell.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/perry-mitchell/restore-func/issues"
+    "url": "https://github.com/perry-mitchell/slyfox/issues"
   },
-  "homepage": "https://github.com/perry-mitchell/restore-func#readme",
+  "homepage": "https://github.com/perry-mitchell/slyfox#readme",
   "devDependencies": {
     "@types/node": "^20.10.1",
     "typescript": "^5.3.2"
