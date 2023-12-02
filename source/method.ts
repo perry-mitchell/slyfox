@@ -39,10 +39,8 @@ export function getNativeMethod<T extends () => void>(
     if (!obj) {
         throw new Error("Unknown method (top window): " + methodPath);
     } else if (obj && !isNative(obj.method, entryPoints.top, safeWindow)) {
-        console.log("NON NATIVE (top)", methodPath);
         // call again, providing the new window (safe) and the top-window context to bind
         obj = getMethodAtPath(methodPath, entryPoints.safe, obj.context);
-        console.log("IS NATIVE NOW?", methodPath, isNative(obj.method, entryPoints.safe, safeWindow));
         // try again
         if (!obj) {
             throw new Error("Unknown method (safe window): " + methodPath);
@@ -50,7 +48,6 @@ export function getNativeMethod<T extends () => void>(
             throw new Error("Failed finding a native method for: " + methodPath);
         }
     }
-    console.log("BINDING", obj.method.toString());
     return bindMethod<T>(obj.method as T, obj.context);
 }
 
@@ -79,7 +76,7 @@ function isNative(pathOrMethod: string | Function, entryPoint: EntryPoint, safeW
         isNativeMethod(pathOrMethod, safeWindow);
 }
 
-function isNativeMethod(
+export function isNativeMethod(
     value: NonNullable<Object> | Function,
     safeWindow: Window
 ): boolean {

@@ -68,6 +68,14 @@ describe("SlyFox", function() {
             await sleep(100);
         });
 
+        it("(self validation: attacker count increases)", async function() {
+            const stolenCalls = await this.page.evaluate(async function() {
+                document.createElement("div");
+                return window.stolenCalls;
+            });
+            expect(stolenCalls).to.equal(1, "There should be exactly 1 call to attacker's overrides");
+        });
+
         it("provides original function on document", async function() {
             const stolenCalls = await this.page.evaluate(async function() {
                 const sesh = await window.SlyFox.createSession();

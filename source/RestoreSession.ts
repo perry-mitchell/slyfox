@@ -1,7 +1,7 @@
 import { assertNotNull } from "./assert.js";
 import { getNativeMethod } from "./method.js";
-import { EntryPoints } from "./types.js";
 import { createSafeWindow } from "./window.js";
+import { EntryPoints } from "./types.js";
 
 export class RestoreSession {
     protected _currentWindow: Window;
@@ -18,7 +18,7 @@ export class RestoreSession {
 
     async init(): Promise<void> {
         if (this._safeWindow) return;
-        this._safeWindow = await createSafeWindow();
+        this._safeWindow = await createSafeWindow(this._currentWindow);
     }
 
     protected getEntryPoints(): EntryPoints {
