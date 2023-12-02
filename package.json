@@ -11,8 +11,8 @@
     "build:test": "rollup -c",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
-    "test": "npm run clean && npm run build:test && npm run test:integration",
-    "test:integration": "mocha \"test/integration/**/*.spec.js\""
+    "test": "npm run clean && npm run test:integration",
+    "test:integration": "npm run build:test && mocha \"test/integration/**/*.spec.js\""
   },
   "repository": {
     "type": "git",
