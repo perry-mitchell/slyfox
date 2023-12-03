@@ -4,6 +4,7 @@ import { createSafeWindow } from "./window.js";
 import { EntryPoints } from "./types.js";
 
 export class RestoreSession {
+    private __cache: Map<string, Function> = new Map();
     protected _currentWindow: Window;
     protected _safeWindow: Window | null = null;
 
@@ -13,12 +14,28 @@ export class RestoreSession {
 
     getNativeMethod<T extends () => void>(methodPath: string): T {
         assertNotNull(this._safeWindow, "RestoreSession not initialised");
-        return getNativeMethod<T>(methodPath, this.getEntryPoints(), this._safeWindow);
+        // Check cache
+        if (this.__cache.has(methodPath)) {
+            return this.__cache.get(methodPath) as T;
+        }
+        // Fetch method
+        const method = getNativeMethod<T>(methodPath, this.getEntryPoints(), this._safeWindow);
+        this.__cache.set(methodPath, method);
+        return method;
     }
 
     async init(): Promise<void> {
         if (this._safeWindow) return;
         this._safeWindow = await createSafeWindow(this._currentWindow);
+    }
+
+    async precacheMethods(methodPaths: Array<string>): Promise<void> {
+        assertNotNull(this._safeWindow, "RestoreSession not initialised");
+        for (const methodPath of methodPaths) {
+            if (this.__cache.has(methodPath)) continue;
+            const method = getNativeMethod(methodPath, this.getEntryPoints(), this._safeWindow);
+            this.__cache.set(methodPath, method);
+        }
     }
 
     protected getEntryPoints(): EntryPoints {
