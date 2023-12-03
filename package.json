@@ -1,6 +1,6 @@
 {
   "name": "slyfox",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Restore overwritten methods on the window and document... Like a fox.",
   "exports": "./dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
