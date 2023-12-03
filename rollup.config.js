@@ -12,7 +12,10 @@ export default {
     ],
     plugins: [
         typescript({
-            tsconfig: "tsconfig.json"
+            tsconfig: "tsconfig.json",
+            compilerOptions: {
+                outDir: "./dist/umd"
+            }
         }),
         resolve({ extensions: [".js", ".ts"] })
     ]
