@@ -11,19 +11,19 @@ function sleep(ms) {
     });
 }
 
-describe("SlyFox", function() {
-    before(async function() {
+describe("SlyFox", function () {
+    before(async function () {
         this.browser = await puppeteer.launch({
             args: ["--no-sandbox"],
             headless: true
         });
     });
 
-    after(async function() {
+    after(async function () {
         await this.browser.close();
     });
 
-    beforeEach(async function() {
+    beforeEach(async function () {
         // Create page
         this.page = await this.browser.newPage();
         // Debugging
@@ -32,16 +32,14 @@ describe("SlyFox", function() {
                 console.log(`${message.type().substr(0, 3).toUpperCase()} ${message.text()}`)
             )
             .on("pageerror", ({ message }) => console.log(message))
-            .on("response", response =>
-                console.log(`${response.status()} ${response.url()}`)
-            )
+            .on("response", response => console.log(`${response.status()} ${response.url()}`))
             .on("requestfailed", request =>
                 console.log(`${request.failure().errorText} ${request.url()}`)
             );
         // Setup document
         await this.page.goto("about:blank");
         await this.page.setViewport({ width: 1024, height: 768 });
-        await this.page.evaluate(async function() {
+        await this.page.evaluate(async function () {
             const root = document.createElement("root");
             root.id = "root";
             document.body.appendChild(root);
@@ -59,24 +57,27 @@ describe("SlyFox", function() {
         await this.page.addScriptTag({ path: scriptPath });
     }
 
-    describe("with attacker first", function() {
-        beforeEach(async function() {
+    describe("with attacker first", function () {
+        beforeEach(async function () {
             await embedAttacker.call(this);
             await sleep(100);
             await embedSlyFox.call(this);
             await sleep(100);
         });
 
-        it("(self validation: attacker count increases)", async function() {
-            const stolenCalls = await this.page.evaluate(async function() {
+        it("(self validation: attacker count increases)", async function () {
+            const stolenCalls = await this.page.evaluate(async function () {
                 document.createElement("div");
                 return window.stolenCalls;
             });
-            expect(stolenCalls).to.equal(1, "There should be exactly 1 call to attacker's overrides");
+            expect(stolenCalls).to.equal(
+                1,
+                "There should be exactly 1 call to attacker's overrides"
+            );
         });
 
-        it("provides original function on document", async function() {
-            const stolenCalls = await this.page.evaluate(async function() {
+        it("provides original function on document", async function () {
+            const stolenCalls = await this.page.evaluate(async function () {
                 const sesh = await window.SlyFox.createSession();
                 const dce = sesh.getNativeMethod("document.createElement");
                 dce("div");
@@ -85,8 +86,8 @@ describe("SlyFox", function() {
             expect(stolenCalls).to.equal(0, "There should be no calls to attacker's overrides");
         });
 
-        it("provides original function on document.body", async function() {
-            const stolenCalls = await this.page.evaluate(async function() {
+        it("provides original function on document.body", async function () {
+            const stolenCalls = await this.page.evaluate(async function () {
                 const sesh = await window.SlyFox.createSession();
                 const dce = sesh.getNativeMethod("document.createElement");
                 const dbac = sesh.getNativeMethod("document.body.appendChild");

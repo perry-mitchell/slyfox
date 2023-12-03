@@ -1,10 +1,7 @@
 import { isNativeMethod } from "./method.js";
 
 const CHILD_BEARING_ELEMENTS = "a,aside,b,div,footer,header,i,p,strong,span";
-const INSERTION_METHODS: Array<[
-    (win: Window) => boolean,
-    (win: Window) => HTMLIFrameElement
-]> = [
+const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLIFrameElement]> = [
     [
         (win: Window) => isNativeMethod(win.document.createElement, win),
         (win: Window) => win.document.createElement("iframe")
@@ -49,7 +46,7 @@ export async function createSafeWindow(win: Window): Promise<Window> {
             if (!frame.contentWindow) {
                 return reject(new Error("IFrame loaded but no window available"));
             }
-            resolve(frame.contentWindow)
+            resolve(frame.contentWindow);
         });
     });
 }
@@ -59,9 +56,7 @@ function getRandomID(): string {
 }
 
 function tryInsertIframe(win: Window): HTMLIFrameElement {
-    const validMethod = INSERTION_METHODS.find(
-        ([check]) => check(win)
-    );
+    const validMethod = INSERTION_METHODS.find(([check]) => check(win));
     if (!validMethod) {
         throw new Error("Found no reliable iframe insertion method");
     }

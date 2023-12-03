@@ -9,7 +9,11 @@ function bindMethod<T extends () => void>(method: T, context: BindTarget): T {
     } as T;
 }
 
-function getMethodAtPath<T extends () => void>(path: string, entryPoint: EntryPoint, bindTarget: BindTarget | null = null): {
+function getMethodAtPath<T extends () => void>(
+    path: string,
+    entryPoint: EntryPoint,
+    bindTarget: BindTarget | null = null
+): {
     method: T;
     context: Object;
 } {
@@ -53,15 +57,17 @@ export function getNativeMethod<T extends () => void>(
 
 function getNativeToStringRexp(safeWindow: Window): RegExp {
     const toString = safeWindow["Object"].prototype.toString;
-    return new RegExp("^" +
-        // Coerce `Object#toString` to a string
-        String(toString)
-            // Escape any special regexp characters
-            .replace(/[.*+?^${}()|[\]\/\\]/g, "\\$&")
-            // Replace mentions of `toString` with `.*?` to keep the template generic.
-            // Replace thing like `for ...` to support environments like Rhino which add extra info
-            // such as method arity.
-            .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+    return new RegExp(
+        "^" +
+            // Coerce `Object#toString` to a string
+            String(toString)
+                // Escape any special regexp characters
+                .replace(/[.*+?^${}()|[\]\/\\]/g, "\\$&")
+                // Replace mentions of `toString` with `.*?` to keep the template generic.
+                // Replace thing like `for ...` to support environments like Rhino which add extra info
+                // such as method arity.
+                .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") +
+            "$"
     );
 }
 
@@ -71,24 +77,22 @@ function pathIsNative(methodPath: string, entryPoint: EntryPoint, safeWindow: Wi
 }
 
 function isNative(pathOrMethod: string | Function, entryPoint: EntryPoint, safeWindow: Window) {
-    return typeof pathOrMethod === "string" ?
-        pathIsNative(pathOrMethod, entryPoint, safeWindow) :
-        isNativeMethod(pathOrMethod, safeWindow);
+    return typeof pathOrMethod === "string"
+        ? pathIsNative(pathOrMethod, entryPoint, safeWindow)
+        : isNativeMethod(pathOrMethod, safeWindow);
 }
 
-export function isNativeMethod(
-    value: NonNullable<Object> | Function,
-    safeWindow: Window
-): boolean {
+export function isNativeMethod(value: NonNullable<Object> | Function, safeWindow: Window): boolean {
     const reNative = getNativeToStringRexp(safeWindow);
     var type = typeof value;
-    const fnStr = type === "function" ? safeWindow["Function"].prototype.toString.call(value) : null;
-    return fnStr ?
-        // Use `Function#toString` to bypass the value's own `toString` method
-        // and avoid being faked out.
-        RF_BOUND_FN_REXP.test(fnStr) || reNative.test(fnStr) :
-        // Fallback to a host object check because some environments will represent
-        // things like typed arrays as DOM methods which may not conform to the
-        // normal native pattern.
-        (value && type == 'object' && OBJ_HOST_CTOR_REXP.test(toString.call(value))) || false;
+    const fnStr =
+        type === "function" ? safeWindow["Function"].prototype.toString.call(value) : null;
+    return fnStr
+        ? // Use `Function#toString` to bypass the value's own `toString` method
+          // and avoid being faked out.
+          RF_BOUND_FN_REXP.test(fnStr) || reNative.test(fnStr)
+        : // Fallback to a host object check because some environments will represent
+          // things like typed arrays as DOM methods which may not conform to the
+          // normal native pattern.
+          (value && type == "object" && OBJ_HOST_CTOR_REXP.test(toString.call(value))) || false;
 }

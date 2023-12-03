@@ -1,5 +1,4 @@
-(function() {
-
+(function () {
     window.stolenCalls = 0;
 
     [
@@ -12,5 +11,4 @@
             return orig(...args);
         };
     });
-
 })();
