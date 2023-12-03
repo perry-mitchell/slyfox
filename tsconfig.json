@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "outDir": "./dist",
+        "module": "ES2020",
+        "moduleResolution": "Node",
+        "target": "ES2020",
+        "declaration": true,
+        "esModuleInterop": true,
+        "downlevelIteration": true,
+        "lib": ["es5", "es6", "es7", "dom", "dom.iterable"],
+        "resolveJsonModule": false,
+        "strictNullChecks": true,
+        "types": []
+    },
+    "include": [
+        "./source/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

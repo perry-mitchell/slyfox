@@ -1,0 +1,30 @@
+name: Tests
+
+on:
+    push:
+    pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Integration tests ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run test:integration
+#   formatting:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Formatting
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: 20.x
+#       - run: npm ci
+#       - run: npm run test:format
