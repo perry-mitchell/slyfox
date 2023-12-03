@@ -15,6 +15,7 @@
     "prepare": "simple-git-hooks",
     "prepublishOnly": "npm run build",
     "test": "npm run clean && npm run test:integration",
+    "test:format": "prettier --check \"{{source,test}/**/*.{js,ts},rollup.config.js}\"",
     "test:integration": "npm run build:test && mocha \"test/integration/**/*.spec.js\""
   },
   "repository": {
