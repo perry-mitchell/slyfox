@@ -14,7 +14,7 @@ const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLI
                 "afterbegin",
                 `<iframe id=\"${randomID}\"></iframe>`
             );
-            return win.document.getElementById(randomID) as HTMLIFrameElement;
+            return win.frames[randomID];
         }
     ],
     [
@@ -30,7 +30,7 @@ const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLI
             const el = bodyEls.find(sub => tags.includes(sub.tagName.toLowerCase()));
             if (!el) throw new Error("No element found for innerHTML insertion");
             el.innerHTML = `${el.innerHTML}<iframe id=\"${randomID}\"></iframe>`;
-            return win.document.getElementById(randomID) as HTMLIFrameElement;
+            return win.frames[randomID];
         }
     ]
 ];
