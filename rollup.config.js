@@ -5,7 +5,7 @@ export default {
     input: "source/index.ts",
     output: [
         {
-            file: "./dist/test/slyfox.js",
+            file: "./dist/umd/index.js",
             format: "umd",
             name: "SlyFox"
         }

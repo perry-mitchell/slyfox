@@ -48,7 +48,7 @@ describe("SlyFox", function () {
     });
 
     async function embedSlyFox() {
-        const scriptPath = path.resolve(__dirname, "../../dist/test/slyfox.js");
+        const scriptPath = path.resolve(__dirname, "../../dist/umd/index.js");
         await this.page.addScriptTag({ path: scriptPath });
     }
 

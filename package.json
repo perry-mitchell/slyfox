@@ -2,13 +2,13 @@
   "name": "slyfox",
   "version": "0.1.0",
   "description": "Restore overwritten methods on the window and document... Like a fox.",
-  "exports": "./dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": "./dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "npm run clean && npm run build:dist",
-    "build:dist": "tsc",
-    "build:test": "rollup -c",
+    "build": "npm run clean && npm run build:esm && npm run build:umd",
+    "build:esm": "tsc",
+    "build:umd": "rollup -c",
     "clean": "rimraf dist",
     "format": "prettier --write \"{{source,test}/**/*.{js,ts},rollup.config.js}\"",
     "pre:commit": "lint-staged",
@@ -16,7 +16,7 @@
     "prepublishOnly": "npm run build",
     "test": "npm run clean && npm run test:integration",
     "test:format": "prettier --check \"{{source,test}/**/*.{js,ts},rollup.config.js}\"",
-    "test:integration": "npm run build:test && mocha \"test/integration/**/*.spec.js\""
+    "test:integration": "npm run build:umd && mocha \"test/integration/**/*.spec.js\""
   },
   "repository": {
     "type": "git",
