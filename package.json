@@ -1,6 +1,6 @@
 {
   "name": "slyfox",
-  "version": "0.2.1",
+  "version": "0.1.0",
   "description": "Restore overwritten methods on the window and document... Like a fox.",
   "exports": "./dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,6 +10,9 @@
     "build:dist": "tsc",
     "build:test": "rollup -c",
     "clean": "rimraf dist",
+    "format": "prettier --write \"{{source,test}/**/*.{js,ts},rollup.config.js}\"",
+    "pre:commit": "lint-staged",
+    "prepare": "simple-git-hooks",
     "prepublishOnly": "npm run build",
     "test": "npm run clean && npm run test:integration",
     "test:integration": "npm run build:test && mocha \"test/integration/**/*.spec.js\""
@@ -17,6 +20,17 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/perry-mitchell/slyfox.git"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "lint-staged": {
+    "{{source,test}/**/*.{js,ts},rollup.config.js}": [
+      "prettier --write"
+    ]
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run pre:commit"
   },
   "author": "Perry Mitchell <perry@perrymitchell.net>",
   "license": "MIT",
@@ -29,10 +43,13 @@
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.10.1",
     "chai": "^4.3.10",
+    "lint-staged": "^15.1.0",
     "mocha": "^10.2.0",
+    "prettier": "^3.1.0",
     "puppeteer": "^21.5.2",
     "rimraf": "^5.0.5",
     "rollup": "^4.6.1",
+    "simple-git-hooks": "^2.9.0",
     "tslib": "^2.6.2",
     "typescript": "^5.3.2"
   }
