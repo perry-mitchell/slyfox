@@ -12,7 +12,7 @@ export class RestoreSession {
         this._currentWindow = win;
     }
 
-    getNativeMethod<T extends () => void>(methodPath: string): T {
+    getNativeMethod<T extends () => unknown>(methodPath: string): T {
         assertNotNull(this._safeWindow, "RestoreSession not initialised");
         // Check cache
         if (this.__cache.has(methodPath)) {

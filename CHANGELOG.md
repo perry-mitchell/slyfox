@@ -1,5 +1,11 @@
 # SlyFox Changelog
 
+## v0.1.2
+_2023-12-03_
+
+ * **Bugfix**:
+   * Fix `getNativeMethod` generic type
+
 ## v0.1.1
 _2023-12-03_
 
