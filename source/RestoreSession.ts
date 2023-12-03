@@ -29,7 +29,7 @@ export class RestoreSession {
         this._safeWindow = await createSafeWindow(this._currentWindow);
     }
 
-    async precacheMethods(methodPaths: Array<string>): Promise<void> {
+    precacheMethods(methodPaths: Array<string>): void {
         assertNotNull(this._safeWindow, "RestoreSession not initialised");
         for (const methodPath of methodPaths) {
             if (this.__cache.has(methodPath)) continue;
