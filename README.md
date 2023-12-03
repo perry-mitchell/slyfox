@@ -37,6 +37,33 @@ async function program() {
 }
 ```
 
+`getNativeMethod`'s only argument is the global path to the method you want to process.
+
+While `getNativeMethod` provides easy access to top-level methods, it doesn't suit prototype-based methods that appear on elements as they're created. For that, you can use `getNativePrototypeMethod` (though note that it does _not_ support caching like `getNativeMethod`):
+
+```typescript
+import { createSession } from "slyfox";
+
+async function program() {
+    const session = await createSession();
+    const createEl = session.getNativeMethod("document.createElement");
+    const child = createEl("div");
+    const targetElement = document.getElementById("root");
+    const targetAppend = session.getNativePrototypeMethod(
+        targetElement,
+        "appendChild",
+        "window.Element.prototype.appendChild"
+    );
+    targetAppend(child);
+}
+```
+
+`getNativePrototypeMethod` takes 3 arguments:
+
+ 1. The element or instance to process as the context
+ 2. The name of the instance's method to process
+ 3. The path to the global prototype
+
 Keep the `RestoreSession` instance around and call it when needed. It caches fetched/bound methods so it doesn't have to reproduce them again every call.
 
 You can also pre-cache some function lookups so you might potentially capture the un-modified versions if you're early enough:
