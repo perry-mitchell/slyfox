@@ -3,7 +3,7 @@ import { BindTarget, EntryPoint, EntryPoints } from "./types.js";
 const OBJ_HOST_CTOR_REXP = /^\[object .+?Constructor\]$/;
 const RF_BOUND_FN_REXP = /__restorefunc_bound_method__/;
 
-function bindMethod<T extends () => void>(method: T, context: BindTarget): T {
+function bindMethod<T extends () => unknown>(method: T, context: BindTarget): T {
     return function __restorefunc_bound_method__(...args) {
         return method.apply(context, args);
     } as T;
@@ -34,7 +34,7 @@ function getMethodAtPath<T extends () => void>(
     };
 }
 
-export function getNativeMethod<T extends () => void>(
+export function getNativeMethod<T extends () => unknown>(
     methodPath: string,
     entryPoints: EntryPoints,
     safeWindow: Window
@@ -53,6 +53,25 @@ export function getNativeMethod<T extends () => void>(
         }
     }
     return bindMethod<T>(obj.method as T, obj.context);
+}
+
+export function getNativePrototypeMethod<T extends NonNullable<Object>, M extends keyof T>(
+    target: T,
+    methodName: M,
+    methodPath: string,
+    safeEntry: EntryPoint
+): T[M] {
+    const method = target[methodName] as () => unknown;
+    if (isNativeMethod(method, safeEntry.window)) {
+        return bindMethod(method, target) as T[M];
+    }
+    const safeMethod = getMethodAtPath(methodPath, safeEntry, target);
+    if (!safeMethod) {
+        throw new Error("Unknown method (safe window): " + methodPath);
+    } else if (!isNativeMethod(safeMethod.method, safeEntry.window)) {
+        throw new Error("Failed finding a native method prototype: " + methodPath);
+    }
+    return bindMethod(safeMethod.method, safeMethod.context) as T[M];
 }
 
 function getNativeToStringRexp(safeWindow: Window): RegExp {

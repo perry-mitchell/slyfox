@@ -1,5 +1,5 @@
 import { assertNotNull } from "./assert.js";
-import { getNativeMethod } from "./method.js";
+import { getNativeMethod, getNativePrototypeMethod } from "./method.js";
 import { createSafeWindow } from "./window.js";
 import { EntryPoints } from "./types.js";
 
@@ -22,6 +22,15 @@ export class RestoreSession {
         const method = getNativeMethod<T>(methodPath, this.getEntryPoints(), this._safeWindow);
         this.__cache.set(methodPath, method);
         return method;
+    }
+
+    getNativePrototypeMethod<T extends NonNullable<Object>, M extends keyof T>(
+        target: T,
+        methodName: M,
+        methodPath: string
+    ) {
+        assertNotNull(this._safeWindow, "RestoreSession not initialised");
+        return getNativePrototypeMethod(target, methodName, methodPath, this.getEntryPoints().safe);
     }
 
     async init(): Promise<void> {

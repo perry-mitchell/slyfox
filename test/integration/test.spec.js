@@ -15,7 +15,7 @@ describe("SlyFox", function () {
     before(async function () {
         this.browser = await puppeteer.launch({
             args: ["--no-sandbox"],
-            headless: true
+            headless: "new"
         });
     });
 
@@ -40,9 +40,12 @@ describe("SlyFox", function () {
         await this.page.goto("about:blank");
         await this.page.setViewport({ width: 1024, height: 768 });
         await this.page.evaluate(async function () {
-            const root = document.createElement("root");
+            const root = document.createElement("div");
             root.id = "root";
             document.body.appendChild(root);
+            const child = document.createElement("div");
+            child.id = "child";
+            document.body.appendChild(child);
         });
         await this.page.waitForSelector("#root");
     });
@@ -65,14 +68,25 @@ describe("SlyFox", function () {
             await sleep(100);
         });
 
-        it("(self validation: attacker count increases)", async function () {
-            const stolenCalls = await this.page.evaluate(async function () {
+        it("(self validation: attacker count increases - root)", async function () {
+            const stolenRootCalls = await this.page.evaluate(function () {
                 document.createElement("div");
                 return window.stolenCalls;
             });
-            expect(stolenCalls).to.equal(
+            expect(stolenRootCalls).to.equal(
                 1,
-                "There should be exactly 1 call to attacker's overrides"
+                "There should be exactly 1 call to attacker's overrides from top level functions"
+            );
+        });
+
+        it("(self validation: attacker count increases - child)", async function () {
+            const stolenChildCalls = await this.page.evaluate(function () {
+                document.getElementById("root").appendChild(document.getElementById("child"));
+                return window.stolenCalls;
+            });
+            expect(stolenChildCalls).to.equal(
+                1,
+                "There should be exactly 1 call to attacker's overrides from child level functions"
             );
         });
 
@@ -93,6 +107,21 @@ describe("SlyFox", function () {
                 const dbac = sesh.getNativeMethod("document.body.appendChild");
                 const span = dce("span");
                 dbac(span);
+                return window.stolenCalls;
+            });
+            expect(stolenCalls).to.equal(0, "There should be no calls to attacker's overrides");
+        });
+
+        it("provides original function on any element", async function () {
+            const stolenCalls = await this.page.evaluate(async function () {
+                const sesh = await window.SlyFox.createSession();
+                const root = document.getElementById("root");
+                const eac = sesh.getNativePrototypeMethod(
+                    root,
+                    "appendChild",
+                    "window.Element.prototype.appendChild"
+                );
+                eac(document.getElementById("child"));
                 return window.stolenCalls;
             });
             expect(stolenCalls).to.equal(0, "There should be no calls to attacker's overrides");
