@@ -3,6 +3,10 @@ import { getNativeMethod, getNativePrototypeMethod } from "./method.js";
 import { createSafeWindow } from "./window.js";
 import { EntryPoints } from "./types.js";
 
+/**
+ * A restore session handler that assists with
+ * restoring overridden functions
+ */
 export class RestoreSession {
     private __cache: Map<string, Function> = new Map();
     protected _currentWindow: Window;
@@ -12,6 +16,14 @@ export class RestoreSession {
         this._currentWindow = win;
     }
 
+    /**
+     * Get the native version of a global method
+     * @param methodPath The global method path
+     * @returns The method, in its native form
+     * @example
+     *  const dce = session.getNativeMethod("document.createElement");
+     *  const div = dce("div");
+     */
     getNativeMethod<T extends () => unknown>(methodPath: string): T {
         assertNotNull(this._safeWindow, "RestoreSession not initialised");
         // Check cache
@@ -24,6 +36,22 @@ export class RestoreSession {
         return method;
     }
 
+    /**
+     * Get the native version of an instance method
+     *  for a global prototype (eg Element)
+     * @param target The target instance (eg. a `HTMLElement` instance)
+     * @param methodName The name of the method to fetch (eg. `appendChild`)
+     * @param methodPath The full path of the prototype
+     *  (eg. `window.Element.prototype.appendChild`)
+     * @returns The processed method
+     * @example
+     *  const targetAppend = session.getNativePrototypeMethod(
+     *      targetElement,
+     *      "appendChild",
+     *      "window.Element.prototype.appendChild"
+     *  );
+     *  targetAppend(someChildElement);
+     */
     getNativePrototypeMethod<T extends NonNullable<Object>, M extends keyof T>(
         target: T,
         methodName: M,
@@ -62,6 +90,11 @@ export class RestoreSession {
     }
 }
 
+/**
+ * Create a new Restore Session
+ * @param win Optional target window
+ * @returns A RestoreSession instance
+ */
 export async function createSession(win: Window = window): Promise<RestoreSession> {
     const session = new RestoreSession(win);
     await session.init();
