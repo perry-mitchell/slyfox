@@ -1,5 +1,11 @@
 # SlyFox Changelog
 
+## v0.1.1
+_2023-12-03_
+
+ * **Bugfix**:
+   * `precacheMethods` should be sync
+
 ## v0.1.0
 _2023-12-02_
 
