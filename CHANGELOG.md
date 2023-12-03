@@ -1,5 +1,10 @@
 # SlyFox Changelog
 
+## v0.2.0
+_2023-12-03_
+
+ * `getNativePrototypeMethod` helper
+
 ## v0.1.2
 _2023-12-03_
 
