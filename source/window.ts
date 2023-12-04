@@ -4,7 +4,11 @@ const CHILD_BEARING_ELEMENTS = "a,aside,b,div,footer,header,i,p,strong,span";
 const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLIFrameElement]> = [
     [
         (win: Window) => isNativeMethod(win.document.createElement, win),
-        (win: Window) => win.document.createElement("iframe")
+        (win: Window) => {
+            const iframe = win.document.createElement("iframe");
+            win.document.body.appendChild(iframe);
+            return iframe;
+        }
     ],
     [
         (win: Window) => isNativeMethod(win.document.body.insertAdjacentHTML, win),
