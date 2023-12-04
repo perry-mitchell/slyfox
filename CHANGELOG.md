@@ -1,5 +1,10 @@
 # SlyFox Changelog
 
+## v0.2.1
+_2023-12-04_
+
+ * Fix `RestoreSession` initialisation: Iframe insert method didn't cause load event
+
 ## v0.2.0
 _2023-12-03_
 
