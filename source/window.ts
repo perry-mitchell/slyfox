@@ -1,4 +1,5 @@
 import { isNativeMethod } from "./method.js";
+import { waitForBody } from "./util.js";
 
 const CHILD_BEARING_ELEMENTS = "a,aside,b,div,footer,header,i,p,strong,span";
 const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLIFrameElement]> = [
@@ -40,6 +41,7 @@ const INSERTION_METHODS: Array<[(win: Window) => boolean, (win: Window) => HTMLI
 ];
 
 export async function createSafeWindow(win: Window): Promise<Window> {
+    await waitForBody(win);
     return new Promise<Window>((resolve, reject) => {
         const frame = tryInsertIframe(win);
         frame.setAttribute("style", "display: none; visibility: hidden;");
